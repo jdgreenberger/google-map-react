@@ -208,7 +208,9 @@ export default class GoogleMap extends Component {
       ...this.props.bootstrapURLKeys,
     };
 
-    this.props.googleMapLoader(bootstrapURLKeys); // we can start load immediatly
+    this.props.googleApi ?
+      this._initMap() :
+      this.props.googleMapLoader(bootstrapURLKeys); // we can start load immediatly
 
     setTimeout(() => { // to detect size
       this._setViewSize();
@@ -407,6 +409,13 @@ export default class GoogleMap extends Component {
     });
   };
 
+  _getGoogleApi = () => {
+    return this.props.googleApi ?
+      Promise.resolve(this.props.googleApi) :
+      this.props.googleMapLoader(bootstrapURLKeys)
+  }
+
+
   _initMap = () => {
     // only initialize the map once
     if (this.initialized_) {
@@ -424,7 +433,7 @@ export default class GoogleMap extends Component {
       ...this.props.bootstrapURLKeys,
     };
 
-    this.props.googleMapLoader(bootstrapURLKeys)
+    this._getGoogleApi(bootstrapURLKeys)
     .then(maps => {
       if (!this.mounted_) {
         return;
